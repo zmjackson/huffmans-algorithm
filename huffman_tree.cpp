@@ -1,4 +1,21 @@
 #include "huffman_tree.h"
+#include <iostream>
+#include <fstream>
+#include <unordered_map>
+#include <queue>
+
+huffman_node::huffman_node(size_t value)
+	: value(value) {}
+
+huffman_head::huffman_head(huffman_node& new_left, huffman_node& new_right)
+{
+	left = std::make_unique<huffman_node>(new_left);
+	right = std::make_unique<huffman_node>(new_right);
+	value = left->value + right->value;
+}
+
+huffman_leaf::huffman_leaf(const char symbol, const size_t frequency) 
+	: symbol(symbol), huffman_node(frequency) {}
 
 /*
 Preconditions: file_name is the name of (and possibly path to) a text file
@@ -7,6 +24,33 @@ Postconditions: Reads the contents of file_name and constructs a
 */
 huffman_tree::huffman_tree(const std::string &file_name){
 
+	std::unordered_map<char, size_t> char_map;
+
+	std::ifstream input_text(file_name);
+	char curr_char;
+
+	while(input_text.get(curr_char))
+	{
+		char_map[curr_char] += 1;
+	}
+
+	input_text.close();
+
+	std::priority_queue<huffman_node> node_queue;
+
+	for (auto& char_data : char_map)
+	{
+		node_queue.emplace(huffman_leaf(char_data.first, char_data.second));
+	}
+
+	while (node_queue.size() > 1)
+	{
+		huff_ptr first = std::make_unique<huffman_node>(node_queue.top());
+		node_queue.pop();
+		huff_ptr second = std::make_unique<huffman_node>(node_queue.top());
+		node_queue.pop();
+		node_queue.emplace(huffman_head(*first, *second));
+	}
 }
 
 huffman_tree::~huffman_tree(){
