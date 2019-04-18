@@ -2,6 +2,7 @@
 #define _HUFFMAN_TREE_H_
 
 #include <iostream>
+#include <string>
 #include <memory>
 
 class huffman_node;
@@ -14,27 +15,22 @@ class huffman_node
 	huff_ptr left;
 	huff_ptr right;
 	size_t value;
-
-	protected:	
+	
+	huffman_node(const huffman_node& node);
 	huffman_node();
 	huffman_node(size_t value);
-};
-
-class huffman_head : public huffman_node
-{	
-	public:	
-	huffman_head(huffman_node& left, huffman_node& right);	
 };
 
 class huffman_leaf : public huffman_node
 {	
 	public:
 	char symbol;	
-	huffman_leaf(const char symbol, const size_t frequency) ;	
+	huffman_leaf(const char symbol, const size_t frequency);	
 };
 
 class huffman_tree {
 	public:
+		huff_ptr root;
 		huffman_tree(const std::string &file_name);
 		~huffman_tree();
 		
