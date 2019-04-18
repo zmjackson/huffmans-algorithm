@@ -7,7 +7,7 @@
 
 class huffman_node;
 
-typedef std::unique_ptr<huffman_node> huff_ptr;
+typedef std::shared_ptr<huffman_node> huff_ptr;
 
 class huffman_node
 {
@@ -26,6 +26,15 @@ class huffman_leaf : public huffman_node
 	public:
 	char symbol;	
 	huffman_leaf(const char symbol, const size_t frequency);	
+};
+
+class huffman_node_compare
+{
+	public:
+	bool operator()(const huff_ptr node1, const huff_ptr node2) const
+	{
+		return node1->value > node2->value;
+	}
 };
 
 class huffman_tree {
