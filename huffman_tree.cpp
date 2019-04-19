@@ -7,11 +7,6 @@
 huffman_node::huffman_node(size_t value)
 	: value(value), left(nullptr), right(nullptr) {}
 
-huffman_node::huffman_node(const huffman_node& node)	
-{
-
-}
-
 huffman_leaf::huffman_leaf(const char symbol, const size_t frequency) 
 	: symbol(symbol), huffman_node(frequency) {}
 
@@ -34,15 +29,16 @@ huffman_tree::huffman_tree(const std::string &file_name){
 
 	input_text.close();
 
-	std::priority_queue<huff_ptr> node_queue;
+	std::priority_queue<huff_ptr, std::vector<huff_ptr>, huffman_node_compare> node_queue;
 
 	for (auto& char_data : char_map)
 	{
-		node_queue.push(std::make_unique<huffman_leaf>(char_data.first, char_data.second));
+		node_queue.push(std::make_shared<huffman_leaf>(char_data.first, char_data.second));
 	}
 
 	while (node_queue.size() > 1)
 	{
+<<<<<<< HEAD
 		huff_ptr first = std::move(node_queue.top());
 		node_queue.pop();
 		huff_ptr second = std::move(node_queue.top());
@@ -54,6 +50,19 @@ huffman_tree::huffman_tree(const std::string &file_name){
 	}
 
 	root = std::move(node_queue.top());
+=======
+		huff_ptr first = node_queue.top();
+		node_queue.pop();
+		huff_ptr second = node_queue.top();
+		node_queue.pop();
+		huff_ptr new_node = std::make_shared<huffman_node>(first->value + second->value);
+		new_node->left = first;
+		new_node->right = second;
+		node_queue.push(new_node);	
+	}
+
+	root = node_queue.top();
+>>>>>>> 9e399f839a89144ac364c091ba671f2dd9b00e4b
 }
 
 huffman_tree::~huffman_tree(){
