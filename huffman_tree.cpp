@@ -43,17 +43,17 @@ huffman_tree::huffman_tree(const std::string &file_name){
 
 	while (node_queue.size() > 1)
 	{
-		huff_ptr first = std::move(node_queue.top);
+		huff_ptr first = std::move(node_queue.top());
 		node_queue.pop();
-		huff_ptr second = std::move(node_queue.top);
+		huff_ptr second = std::move(node_queue.top());
 		node_queue.pop();
 		huff_ptr new_node = std::make_unique<huffman_node>(first->value + second->value);
 		new_node->left = std::move(first);
 		new_node->right = std::move(second);
-		node_queue.push(std::move(new_node));	
+		node_queue.push(std::move(new_node));
 	}
 
-	root = std::move(node_queue.top);
+	root = std::move(node_queue.top());
 }
 
 huffman_tree::~huffman_tree(){
