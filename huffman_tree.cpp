@@ -5,7 +5,8 @@
 #include <queue>
 #include <stack>
 
-node::node() {}
+node::node()
+	: value(0) {}
 
 node::node(size_t value)
 	: value(value) {}
@@ -43,7 +44,7 @@ huffman_tree::huffman_tree(const std::string &file_name){
 	for (auto& char_data : char_map)
 	{
 		node_queue.push(std::make_shared<huffman_leaf>(char_data.first, char_data.second));
-		std::cout << 1 << char_data.first << ' ' << char_data.second << std::endl;
+		std::cout << char_data.first << ' ' << char_data.second << std::endl;
 	}
 
 	while (node_queue.size() > 1)
@@ -72,16 +73,26 @@ Postconditions: Returns the Huffman code for character if character is in the tr
 				and an empty string otherwise.
 */
 
-bool find_path(node_ptr head, std::stack<bool>& path, char char_to_find)
+bool find_path(node_ptr head, std::stack<bool>& path, const char char_to_find)
 {
+	if (head == nullptr) return false;
+
 	if (std::shared_ptr<huffman_leaf> leaf = std::dynamic_pointer_cast<huffman_leaf>(head))
 	{
-		return leaf->symbol == char_to_find ? true : false;
+		if (leaf->symbol == char_to_find) return true;
 	}
 	else if (std::shared_ptr<huffman_node> huff_node = std::dynamic_pointer_cast<huffman_node>(head))
 	{
-		if (find_path(huff_node->left, path, char_to_find)) path.push(0);
-		if (find_path(huff_node->right, path, char_to_find)) path.push(1);
+		if (find_path(huff_node->left, path, char_to_find))
+		{
+			path.push(0);
+			return true;
+		} 
+		if (find_path(huff_node->right, path, char_to_find))
+		{
+			path.push(1);
+			return true;
+		} 
 	}	
 
 	path.pop();
@@ -90,10 +101,17 @@ bool find_path(node_ptr head, std::stack<bool>& path, char char_to_find)
 
 std::string huffman_tree::get_character_code(char character) const 
 {
-	std::string character_code;
+	std::string character_code = "";
 	std::stack<bool> path;
-	
-	find_path(root, path, character);
+
+	if (std::shared_ptr<huffman_leaf> leaf_root = std::dynamic_pointer_cast<huffman_leaf>(root))
+	{
+		path.push(0);		
+	}	
+	else
+	{
+		find_path(root, path, character);
+	}
 
 	while (!path.empty())
 	{
