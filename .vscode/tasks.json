@@ -5,7 +5,7 @@
             "label": "Build Huffman",
             "type": "shell",
             "command": "g++",
-            "args": ["-g", "huffman_tree.h", "huffman_tree.cpp"],
+            "args": ["-g", "huffman_tree.h", "huffman_tree.cpp", "temp_main.cpp", "-o", "huffman"],
             "group": {
                 "kind": "build",
                 "isDefault": true

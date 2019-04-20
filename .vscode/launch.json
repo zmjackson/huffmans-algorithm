@@ -23,7 +23,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build hashing analysis"
+            "preLaunchTask": "Build Huffman"
         }
     ]
 }

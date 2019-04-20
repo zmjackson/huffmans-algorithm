@@ -3,6 +3,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <queue>
+#include <stack>
 
 huffman_node::huffman_node(size_t value)
 	: value(value), left(nullptr), right(nullptr) {}
@@ -34,23 +35,11 @@ huffman_tree::huffman_tree(const std::string &file_name){
 	for (auto& char_data : char_map)
 	{
 		node_queue.push(std::make_shared<huffman_leaf>(char_data.first, char_data.second));
+		std::cout << 1 << char_data.first << ' ' << char_data.second << std::endl;
 	}
 
 	while (node_queue.size() > 1)
 	{
-<<<<<<< HEAD
-		huff_ptr first = std::move(node_queue.top());
-		node_queue.pop();
-		huff_ptr second = std::move(node_queue.top());
-		node_queue.pop();
-		huff_ptr new_node = std::make_unique<huffman_node>(first->value + second->value);
-		new_node->left = std::move(first);
-		new_node->right = std::move(second);
-		node_queue.push(std::move(new_node));
-	}
-
-	root = std::move(node_queue.top());
-=======
 		huff_ptr first = node_queue.top();
 		node_queue.pop();
 		huff_ptr second = node_queue.top();
@@ -62,7 +51,6 @@ huffman_tree::huffman_tree(const std::string &file_name){
 	}
 
 	root = node_queue.top();
->>>>>>> 9e399f839a89144ac364c091ba671f2dd9b00e4b
 }
 
 huffman_tree::~huffman_tree(){
@@ -75,8 +63,35 @@ Preconditions: Character is a character with an ASCII value
 Postconditions: Returns the Huffman code for character if character is in the tree
 				and an empty string otherwise.
 */
-std::string huffman_tree::get_character_code(char character) const {
-	return "";
+std::string huffman_tree::get_character_code(char character) const 
+{
+	std::string character_code;
+	std::stack<bool> path;
+	
+	find_path(root, path, character);
+
+	while (!path.empty())
+	{
+		if (path.top() == 0) character_code += "0";
+		else character_code += "1";
+		path.pop();
+	}
+
+	return character_code;
+}
+
+bool find_path(huff_ptr head, std::stack<bool>& path, char char_to_find)
+{
+	if (std::shared_ptr<huffman_leaf> leaf = std::dynamic_pointer_cast<huffman_leaf>(head))
+	{
+		return leaf->symbol == char_to_find ? true : false;
+	}
+
+	if (find_path(head->left, path, char_to_find)) path.push(0);
+	if (find_path(head->right, path, char_to_find)) path.push(1);
+
+	path.pop();
+	return false;
 }
 
 /*
