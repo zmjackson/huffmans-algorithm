@@ -5,11 +5,19 @@
 #include <queue>
 #include <stack>
 
+node::node() {}
+
+node::node(size_t value)
+	: value(value) {}
+
+huffman_node::huffman_node()
+	: left(nullptr), right(nullptr) {}
+
 huffman_node::huffman_node(size_t value)
-	: value(value), left(nullptr), right(nullptr) {}
+	: node(value) {}
 
 huffman_leaf::huffman_leaf(const char symbol, const size_t frequency) 
-	: symbol(symbol), huffman_node(frequency) {}
+	: symbol(symbol), node(frequency) {}
 
 /*
 Preconditions: file_name is the name of (and possibly path to) a text file
@@ -30,7 +38,7 @@ huffman_tree::huffman_tree(const std::string &file_name){
 
 	input_text.close();
 
-	std::priority_queue<huff_ptr, std::vector<huff_ptr>, huffman_node_compare> node_queue;
+	std::priority_queue<node_ptr, std::vector<node_ptr>, node_compare> node_queue;
 
 	for (auto& char_data : char_map)
 	{
@@ -40,9 +48,9 @@ huffman_tree::huffman_tree(const std::string &file_name){
 
 	while (node_queue.size() > 1)
 	{
-		huff_ptr first = node_queue.top();
+		node_ptr first = node_queue.top();
 		node_queue.pop();
-		huff_ptr second = node_queue.top();
+		node_ptr second = node_queue.top();
 		node_queue.pop();
 		huff_ptr new_node = std::make_shared<huffman_node>(first->value + second->value);
 		new_node->left = first;
@@ -63,6 +71,23 @@ Preconditions: Character is a character with an ASCII value
 Postconditions: Returns the Huffman code for character if character is in the tree
 				and an empty string otherwise.
 */
+
+bool find_path(node_ptr head, std::stack<bool>& path, char char_to_find)
+{
+	if (std::shared_ptr<huffman_leaf> leaf = std::dynamic_pointer_cast<huffman_leaf>(head))
+	{
+		return leaf->symbol == char_to_find ? true : false;
+	}
+	else if (std::shared_ptr<huffman_node> huff_node = std::dynamic_pointer_cast<huffman_node>(head))
+	{
+		if (find_path(huff_node->left, path, char_to_find)) path.push(0);
+		if (find_path(huff_node->right, path, char_to_find)) path.push(1);
+	}	
+
+	path.pop();
+	return false;
+}
+
 std::string huffman_tree::get_character_code(char character) const 
 {
 	std::string character_code;
@@ -78,20 +103,6 @@ std::string huffman_tree::get_character_code(char character) const
 	}
 
 	return character_code;
-}
-
-bool find_path(huff_ptr head, std::stack<bool>& path, char char_to_find)
-{
-	if (std::shared_ptr<huffman_leaf> leaf = std::dynamic_pointer_cast<huffman_leaf>(head))
-	{
-		return leaf->symbol == char_to_find ? true : false;
-	}
-
-	if (find_path(head->left, path, char_to_find)) path.push(0);
-	if (find_path(head->right, path, char_to_find)) path.push(1);
-
-	path.pop();
-	return false;
 }
 
 /*
