@@ -87,8 +87,7 @@ bool find_path(node_ptr head, std::vector<bool>& path, const char char_to_find)
 	}
 	else if (std::shared_ptr<huffman_node> huff_node = std::dynamic_pointer_cast<huffman_node>(head))
 	{
-		path.push_back(0);	
-		print_path(path);
+		path.push_back(0);			
 		if (!find_path(huff_node->left, path, char_to_find))
 		{
 			path.pop_back();			
@@ -97,8 +96,7 @@ bool find_path(node_ptr head, std::vector<bool>& path, const char char_to_find)
 		{
 			return true;
 		}		
-		path.push_back(1);
-		print_path(path);
+		path.push_back(1);		
 		if (!find_path(huff_node->right, path, char_to_find))
 		{
 			path.pop_back();			
@@ -127,9 +125,6 @@ std::string huffman_tree::get_character_code(char character) const
 		int x = 5;
 		find_path(root, path, character);
 	}
-
-	std::cout << "Path size:" << path.size() << std::endl;
-	print_path(path);
 
 	for (bool direction : path) 
 	{
