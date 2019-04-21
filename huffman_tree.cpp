@@ -133,7 +133,7 @@ std::string huffman_tree::get_character_code(char character) const
 	std::cout << "Path size:" << path.size() << std::endl;
 	print_path(path);
 
-	for (bool i : path) i == 0 ? character_code += "0": character_code += "1";
+	for (bool i : path) character_code.push_back(i);
 	/*while (!path.empty())
 	{
 		if (path.front() == 0) character_code += "0";
@@ -152,7 +152,22 @@ Postconditions: Returns the Huffman encoding for the contents of file_name
 				return an empty string
 */
 std::string huffman_tree::encode(const std::string &file_name) const {
-	return "";
+
+	char letter;
+	std::string huffman_encoding = "";
+	std::ifstream text_to_encode(file_name);
+
+	if (text_to_encode)
+	{
+		while (text_to_encode.get(letter))
+		{
+			auto found_letter = letters_in_tree.find(letter);
+			if (found_letter == letters_in_tree.end()) return "";
+			else huffman_encoding += get_character_code(letter);
+		}
+	}
+
+	return huffman_encoding;
 }
 
 /*
@@ -161,5 +176,25 @@ Postconditions: Returns the plaintext represented by the string if the string
 				is a valid Huffman encoding and an empty string otherwise
 */
 std::string huffman_tree::decode(const std::string &string_to_decode) const {
-	return "";
+
+	node_ptr curr_node = root;
+	std::string decoded_text;
+
+	for (char direction : string_to_decode)
+	{
+		
+		if (std::shared_ptr<huffman_node> huff_node = std::dynamic_pointer_cast<huffman_node>(curr_node))
+		{
+			if (direction == '0') curr_node = huff_node->left;
+			else if (direction == '1') curr_node = huff_node->right;
+			else return "";
+		}
+		
+		if (std::shared_ptr<huffman_leaf> leaf = std::dynamic_pointer_cast<huffman_leaf>(curr_node))
+		{
+			decoded_text.push_back(leaf->symbol);
+			curr_node = root;
+		}
+	}
+	return decoded_text;
 }

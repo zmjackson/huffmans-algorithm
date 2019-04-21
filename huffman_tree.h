@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <unordered_set>
 
 class node; 
 class huffman_node;
@@ -51,6 +52,8 @@ class node_compare
 class huffman_tree {
 	public:
 		node_ptr root;
+		std::unordered_set<char> letters_in_tree;
+		
 		huffman_tree(const std::string &file_name);
 		~huffman_tree();
 		
