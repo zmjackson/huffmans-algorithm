@@ -5,12 +5,11 @@
 #include <string>
 #include <memory>
 
-class node; 
+class node;
 class huffman_node;
 
 typedef std::shared_ptr<node> node_ptr;
 typedef std::shared_ptr<huffman_node> huff_ptr;
-
 
 class node
 {
