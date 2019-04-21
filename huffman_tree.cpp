@@ -3,7 +3,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <queue>
-#include <stack>
+#include <vector>
 
 node::node()
 	: value(0) {}
@@ -66,6 +66,12 @@ huffman_tree::~huffman_tree(){
 
 }
 
+void print_path(std::vector<bool>& path)
+{
+	for (bool i : path) std::cout << i;
+	std::cout << std::endl;	
+}
+
 /*
 Preconditions: Character is a character with an ASCII value
 				between 0 and 127 (inclusive).
@@ -73,7 +79,7 @@ Postconditions: Returns the Huffman code for character if character is in the tr
 				and an empty string otherwise.
 */
 
-bool find_path(node_ptr head, std::stack<bool>& path, const char char_to_find)
+bool find_path(node_ptr head, std::vector<bool>& path, const char char_to_find)
 {
 	if (head == nullptr) return false;
 
@@ -83,42 +89,57 @@ bool find_path(node_ptr head, std::stack<bool>& path, const char char_to_find)
 	}
 	else if (std::shared_ptr<huffman_node> huff_node = std::dynamic_pointer_cast<huffman_node>(head))
 	{
-		if (find_path(huff_node->left, path, char_to_find))
+		path.push_back(0);	
+		print_path(path);
+		if (!find_path(huff_node->left, path, char_to_find))
 		{
-			path.push(0);
-			return true;
+			path.pop_back();			
 		} 
-		if (find_path(huff_node->right, path, char_to_find))
+		else
 		{
-			path.push(1);
 			return true;
-		} 
+		}		
+		path.push_back(1);
+		print_path(path);
+		if (!find_path(huff_node->right, path, char_to_find))
+		{
+			path.pop_back();			
+		}
+		else
+		{
+			return true;
+		}
+		
 	}	
-
-	path.pop();
+		
 	return false;
 }
 
 std::string huffman_tree::get_character_code(char character) const 
 {
 	std::string character_code = "";
-	std::stack<bool> path;
-
+	std::vector<bool> path;
+		
 	if (std::shared_ptr<huffman_leaf> leaf_root = std::dynamic_pointer_cast<huffman_leaf>(root))
 	{
-		path.push(0);		
+		path.push_back(0);		
 	}	
 	else
 	{
+		int x = 5;
 		find_path(root, path, character);
 	}
 
-	while (!path.empty())
+	std::cout << "Path size:" << path.size() << std::endl;
+	print_path(path);
+
+	for (bool i : path) i == 0 ? character_code += "0": character_code += "1";
+	/*while (!path.empty())
 	{
-		if (path.top() == 0) character_code += "0";
+		if (path.front() == 0) character_code += "0";
 		else character_code += "1";
-		path.pop();
-	}
+		path.pop_back();
+	}*/
 
 	return character_code;
 }
