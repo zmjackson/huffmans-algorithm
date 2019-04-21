@@ -44,7 +44,7 @@ huffman_tree::huffman_tree(const std::string &file_name){
 	for (auto& char_data : char_map)
 	{
 		node_queue.push(std::make_shared<huffman_leaf>(char_data.first, char_data.second));
-		std::cout << char_data.first << ' ' << char_data.second << std::endl;
+		letters_in_tree.insert(char_data.first);
 	}
 
 	while (node_queue.size() > 1)
@@ -133,7 +133,11 @@ std::string huffman_tree::get_character_code(char character) const
 	std::cout << "Path size:" << path.size() << std::endl;
 	print_path(path);
 
-	for (bool i : path) character_code.push_back(i);
+	for (bool direction : path) 
+	{
+		if (direction == 0) character_code += "0";
+		else character_code += "1";
+	}
 	/*while (!path.empty())
 	{
 		if (path.front() == 0) character_code += "0";
@@ -162,8 +166,12 @@ std::string huffman_tree::encode(const std::string &file_name) const {
 		while (text_to_encode.get(letter))
 		{
 			auto found_letter = letters_in_tree.find(letter);
-			if (found_letter == letters_in_tree.end()) return "";
-			else huffman_encoding += get_character_code(letter);
+			if (found_letter == letters_in_tree.end()) return "";			
+			else
+			{
+				std::string character_code = get_character_code(letter);
+				huffman_encoding += character_code;
+			} 
 		}
 	}
 
@@ -189,7 +197,7 @@ std::string huffman_tree::decode(const std::string &string_to_decode) const {
 			else if (direction == '1') curr_node = huff_node->right;
 			else return "";
 		}
-		
+
 		if (std::shared_ptr<huffman_leaf> leaf = std::dynamic_pointer_cast<huffman_leaf>(curr_node))
 		{
 			decoded_text.push_back(leaf->symbol);

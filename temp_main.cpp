@@ -2,12 +2,14 @@
 #include <iostream>
 #include <queue>
 
+using namespace std;
+
 int main()
 {   
     huffman_tree tree("texts/mississippi.txt");
-    std::string test = tree.get_character_code('i');
-    std::cout << test << std::endl; 
-    std::string mississippi = "100110011001110110111";
-    std::string decoded = tree.decode(mississippi);
-    std::cout << decoded;
+    string test = tree.get_character_code('m');
+    cout << test << endl; 
+    string encoded = tree.encode("texts/mississippi.txt");    
+    string decoded = tree.decode(encoded);
+    cout << decoded;
 }
