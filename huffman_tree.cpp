@@ -5,8 +5,8 @@
 #include <queue>
 #include <vector>
 
-node::node()
-	: value(0) {}
+node::node() {}
+
 
 node::node(size_t value)
 	: value(value) {}
@@ -81,11 +81,9 @@ Postconditions: Returns the Huffman code for character if character is in the tr
 
 bool find_path(node_ptr head, std::vector<bool>& path, const char char_to_find)
 {
-	if (head == nullptr) return false;
-
 	if (std::shared_ptr<huffman_leaf> leaf = std::dynamic_pointer_cast<huffman_leaf>(head))
 	{
-		if (leaf->symbol == char_to_find) return true;
+		return leaf->symbol == char_to_find ? true : false;
 	}
 	else if (std::shared_ptr<huffman_node> huff_node = std::dynamic_pointer_cast<huffman_node>(head))
 	{
